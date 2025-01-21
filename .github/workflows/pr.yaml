@@ -60,10 +60,23 @@ jobs:
       libs: ${{ steps.test-orchestrator.outputs.libs }}
     steps:
       - name: Member Check
-        if: ${{ github.event.pull_request.author_association != 'MEMBER' }}
+        uses: octokit/request-action@v2.x
+        id: member_check
+        with:
+          route: >
+            GET /repos/${{ github.repository }}/collaborators/${{ github.triggering_actor }}/permission
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Validate Permissions
         run: |
-          echo "Pull Request not triggered by a MSDK team member.  Someone from the team needs to rerun this workflow AFTER it has been deemed safe."
-          exit 1
+          permissions=$(echo "${{ steps.member_check.outputs.data }}" | jq -r '.permission')
+          echo "Triggering actor: \
+            ${{ github.triggering_actor }} has permissions: $permissions"
+          if [[ "$permissions" != "write" && "$permissions" != "admin" ]]; then
+            echo "Pull Request not triggered by a user with sufficient permissions."
+            echo "Someone from the team needs to rerun this workflow AFTER it has been deemed safe."
+            exit 1
+          fi
       - name: Checkout
         uses: actions/checkout@v4
         with:
