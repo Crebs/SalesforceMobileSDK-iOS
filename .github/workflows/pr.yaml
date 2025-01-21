@@ -20,14 +20,15 @@ jobs:
       - name: Debug Permissions Response
         run: |
           echo "Permissions raw response: ${{ steps.check_permissions.outputs.data }}"
-      # - name: Validate Write Permissions
-      #   run: |
-      #     permissions=$(echo "${{ steps.check_permissions.outputs.data }}" | jq -r '.permission')
-      #     echo "User ${{ github.actor }} has test--a permissions: $permissions"
-      #     if [[ "$permissions" != "write" && "$permissions" != "admin" ]]; then
-      #       echo "User does not have sufficient permissions (write or admin) to proceed."
-      #       exit 1
-      #     fi
+      - name: Validate Write Permissions
+        run: |
+          echo "${{ steps.check_permissions.outputs.data }}" > permissions.json
+          permissions=$(jq -r '.permission' permissions.json)
+          echo "User ${{ github.actor }} has permissions: $permissions"
+          if [[ "$permissions" != "write" && "$permissions" != "admin" ]]; then
+            echo "User does not have sufficient permissions (write or admin) to proceed."
+            exit 1
+          fi
       - name: Checkout
         uses: actions/checkout@v4
         with:
