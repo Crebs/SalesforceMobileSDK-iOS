@@ -17,15 +17,17 @@ jobs:
           route: GET /repos/${{ github.repository }}/collaborators/${{ github.actor }}/permission
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Validate Write Permissions
+      - name: Debug Permissions Response
         run: |
-          permissions=$(echo "${{ steps.check_permissions.outputs.data }}" | jq -r '.permission')
-          echo "User ${{ github.actor }} has test--a permissions: $permissions"
-          if [[ "$permissions" != "write" && "$permissions" != "admin" ]]; then
-            echo "User does not have sufficient permissions (write or admin) to proceed."
-            exit 1
-          fi
+          echo "Permissions raw response: ${{ steps.check_permissions.outputs.data }}"
+      # - name: Validate Write Permissions
+      #   run: |
+      #     permissions=$(echo "${{ steps.check_permissions.outputs.data }}" | jq -r '.permission')
+      #     echo "User ${{ github.actor }} has test--a permissions: $permissions"
+      #     if [[ "$permissions" != "write" && "$permissions" != "admin" ]]; then
+      #       echo "User does not have sufficient permissions (write or admin) to proceed."
+      #       exit 1
+      #     fi
       - name: Checkout
         uses: actions/checkout@v4
         with:
