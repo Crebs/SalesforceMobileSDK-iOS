@@ -10,11 +10,22 @@ jobs:
   static-analysis:
     runs-on: macos-15
     steps:
-      - name: Member Check
-        if: ${{ github.event.pull_request.author_association != 'MEMBER' && github.event.pull_request.author_association != 'OWNER' }}
-        run: |
-          echo "Pull Request not triggered by a MSDK team member.  Someone from the team needs to rerun this workflow AFTER it has been deemed safe. -- test:wq"
+      - name: Check Write Permissions
+        uses: octokit/request-action@v2.x
+        id: check_permissions
+        with:
+          route: GET /repos/${{ github.repository }}/collaborators/${{ github.actor }}/permission
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Validate Write Permissions
+      run: |
+        permissions=$(echo "${{ steps.check_permissions.outputs.data }}" | jq -r '.permission')
+        echo "User ${{ github.actor }} has permissions: $permissions"
+        if [[ "$permissions" != "write" && "$permissions" != "admin" ]]; then
+          echo "User does not have sufficient permissions (write or admin) to proceed."
           exit 1
+        fi
       - name: Checkout
         uses: actions/checkout@v4
         with:
