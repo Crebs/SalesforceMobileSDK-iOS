@@ -19,7 +19,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Debug Permissions Response
         run: |
-          echo "Permissions raw response: ${{ steps.check_permissions.outputs.data }}"
+          echo "Permissions raw responsen -- test: ${{ steps.check_permissions.outputs.data }}"
       - name: Validate Write Permissions
         run: |
           echo "${{ steps.check_permissions.outputs.data }}" > permissions.json
