@@ -23,7 +23,7 @@ jobs:
       - name: Validate Write Permissions
         run: |
           permissions='${{ steps.check_permissions.outputs.data }}'
-          echo "User ${{ github.actor }} has permissions: $permissions"
+          echo "User ${{ github.actor }} has test changes permissions: $permissions"
           if [[ "$permissions" != "write" && "$permissions" != "admin" ]]; then
             echo "User does not have sufficient permissions (write or admin) to proceed."
             exit 1
