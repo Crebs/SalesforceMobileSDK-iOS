@@ -22,7 +22,7 @@ jobs:
           echo "Permissions raw responsen: ${{ steps.check_permissions.outputs.data }}"
       - name: Validate Write Permissions
         run: |
-          echo "${{ steps.check_permissions.outputs.data }}" > permissions.json
+          printf '%s' '${{ steps.check_permissions.outputs.data }}' > permissions.json
           permissions=$(jq -r '.permission' permissions.json)
           echo "User ${{ github.actor }} has permissions: $permissions"
           if [[ "$permissions" != "write" && "$permissions" != "admin" ]]; then
