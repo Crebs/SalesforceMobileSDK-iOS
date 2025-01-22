@@ -11,9 +11,13 @@ jobs:
     runs-on: macos-15
     steps:
       - name: Write Permissions Check
+        uses: octokit/request-action@v2.x
+        id: check_permissions
+        with:
+          route: GET /repos/${{ github.repository }}/collaborators/${{ github.actor }}/permission
         run: |
           permission=$(echo "${{ fromJson(steps.check_permissions.outputs.data).permission }}")
-          echo "User ${{ github.actor }} has permissions: $permissions"
+          echo "Testing User ${{ github.actor }} has permissions: $permissions"
           if [[ "$permission" != "write" && "$permission" != "admin" ]]; then
             echo "User ${{ github.actor }} does not have sufficient permissions (write or admin) to proceed."
             exit 1
@@ -49,6 +53,10 @@ jobs:
       libs: ${{ steps.test-orchestrator.outputs.libs }}
     steps:
       - name: Write Permissions Check
+        uses: octokit/request-action@v2.x
+        id: check_permissions
+        with:
+          route: GET /repos/${{ github.repository }}/collaborators/${{ github.actor }}/permission
         run: |
           permission=$(echo "${{ fromJson(steps.check_permissions.outputs.data).permission }}")
           echo "User ${{ github.actor }} has permissions: $permissions"
