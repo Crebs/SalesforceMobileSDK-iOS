@@ -25,7 +25,7 @@ jobs:
           raw_permissions="${{ steps.check_permissions.outputs.data }}"
           echo "User ${{ github.actor }} has permissions: $permissions"
           permission=$(echo "$raw_permissions" | grep -oP '(?<=permission: )\w+')
-          echo "Extracted permission: $permission"
+          echo "Extracted permission testing: $permission"
           if [[ "$permission" != "write" && "$permission" != "admin" ]]; then
             echo "User ${{ github.actor }} does not have sufficient permissions (write or admin) to proceed."
             exit 1
