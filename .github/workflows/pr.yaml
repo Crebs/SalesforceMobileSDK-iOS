@@ -22,10 +22,12 @@ jobs:
           echo "Permissions raw responsen: ${{ steps.check_permissions.outputs.data }}"
       - name: Validate Write Permissions
         run: |
-          permissions='${{ steps.check_permissions.outputs.data }}'
-          echo "User ${{ github.actor }} has test changes permissions: $permissions"
-          if [[ "$permissions" != "write" && "$permissions" != "admin" ]]; then
-            echo "User does not have sufficient permissions (write or admin) to proceed."
+          raw_permissions="${{ steps.check_permissions.outputs.data }}"
+          echo "User ${{ github.actor }} has permissions: $permissions"
+          permission=$(echo "$raw_permissions" | grep -oP '(?<=permission: )\w+')
+          echo "Extracted permission: $permission"
+          if [[ "$permission" != "write" && "$permission" != "admin" ]]; then
+            echo "User ${{ github.actor }} does not have sufficient permissions (write or admin) to proceed."
             exit 1
           fi
       - name: Checkout
