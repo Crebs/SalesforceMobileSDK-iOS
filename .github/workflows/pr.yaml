@@ -58,7 +58,7 @@ jobs:
     outputs:
       libs: ${{ steps.test-orchestrator.outputs.libs }}
     steps:
-      - name: Testing Check Write Permissions
+      - name: Check Write Permissions
         uses: octokit/request-action@v2.x
         id: check_permissions
         with:
