@@ -62,7 +62,7 @@ jobs:
         uses: octokit/request-action@v2.x
         id: check_permission
         with:
-          route: GET /repos/${{ github.repository }}/collaborators/${{ github.triggering_actor }}/permission
+          route: GET /repos/:org/:repo/collaborators/:user/permission
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Debug Permission Response
