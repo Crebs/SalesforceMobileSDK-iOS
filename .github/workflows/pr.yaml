@@ -10,11 +10,11 @@ jobs:
   static-analysis:
     runs-on: macos-15
     steps:
-      - name: Test Check Write Permissions
+      - name: Check Write Permissions
         uses: octokit/request-action@v2.x
         id: check_permissions
         with:
-          route: GET /repos/:org/:repo/collaborators/:user/permission
+          route: GET /repos/${{ github.repository }}/collaborators/${{ github.actor }}/permission
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Debug Permissions Response
@@ -23,9 +23,9 @@ jobs:
       - name: Validate Write Permissions
         run: |
           permission=$(echo "${{ fromJson(steps.check_permissions.outputs.data).permission }}")
-          echo "User ${{ github.triggering_actor }} has permissions: $permissions"
+          echo "User ${{ github.actor }} has permissions: $permission"
           if [[ "$permission" != "write" && "$permission" != "admin" ]]; then
-            echo "User ${{ github.triggering_actor }} does not have sufficient permissions (write or admin) to proceed."
+            echo "User ${{ github.actor }} does not have sufficient permissions (write or admin) to proceed."
             exit 1
           fi
       - name: Checkout
@@ -52,7 +52,6 @@ jobs:
           cd .github/DangerFiles
           bundle update && bundle install
           bundle exec danger --dangerfile=StaticAnalysis.rb --danger_id=StaticAnalysis
-
   test-orchestrator:
     runs-on: macos-15
     outputs:
@@ -62,7 +61,7 @@ jobs:
         uses: octokit/request-action@v2.x
         id: check_permissions
         with:
-          route: GET /repos/:org/:repo/collaborators/:user/permission
+          route: GET /repos/${{ github.repository }}/collaborators/${{ github.actor }}/permission
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Debug Permissions Response
@@ -71,9 +70,9 @@ jobs:
       - name: Validate Write Permissions
         run: |
           permission=$(echo "${{ fromJson(steps.check_permissions.outputs.data).permission }}")
-          echo "User ${{ github.triggering_actor }} has permissions: $permissions"
+          echo "User ${{ github.actor }} has permissions: $permission"
           if [[ "$permission" != "write" && "$permission" != "admin" ]]; then
-            echo "User ${{ github.triggering_actor }} does not have sufficient permissions (write or admin) to proceed."
+            echo "User ${{ github.actor }} does not have sufficient permissions (write or admin) to proceed."
             exit 1
           fi
       - name: Checkout
@@ -91,7 +90,6 @@ jobs:
           cd .github/DangerFiles
           bundle update && bundle install
           bundle exec danger --dangerfile=TestOrchestrator.rb
-
   ios-pr:
     needs: [test-orchestrator]
     strategy:
