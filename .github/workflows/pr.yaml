@@ -10,7 +10,7 @@ jobs:
   static-analysis:
     runs-on: macos-15
     steps:
-      - name: Check Write Permissions
+      - name: Test Check Write Permissions
         uses: octokit/request-action@v2.x
         id: check_permissions
         with:
